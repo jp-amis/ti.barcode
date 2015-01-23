@@ -89,6 +89,12 @@ static zxing::DecodeHints decodeHints;
     return reader_->decode(grayImage, hints);
 }
 
+// CHANGES
+- (BOOL) shouldAutorotate {
+    return NO;
+}
+// -------
+
 @end
 
 @implementation TiBarcodeModule
@@ -126,6 +132,12 @@ static zxing::DecodeHints decodeHints;
 	[self _cleanup];
 	[super _destroy];
 }
+
+// CHANGES
+- (BOOL) shouldAutorotate {
+    return NO;
+}
+// -------
 
 
 #pragma Public APIs

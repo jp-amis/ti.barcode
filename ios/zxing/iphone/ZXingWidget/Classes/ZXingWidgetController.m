@@ -52,6 +52,11 @@
 @synthesize customOverlay;
 @synthesize useFrontCamera;
 
+// CHANGES
+- (BOOL) shouldAutorotate {
+    return NO;
+}
+// -------
 
 - (id)initWithDelegate:(id<ZXingDelegate>)scanDelegate
             showCancel:(BOOL)shouldShowCancel
