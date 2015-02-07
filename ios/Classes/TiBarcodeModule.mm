@@ -202,13 +202,50 @@ static zxing::DecodeHints decodeHints;
     return NUMBOOL(retVal);
 }
 
+-(void)getCameraPermission:(id)args
+{
+    NSMutableDictionary *event = [NSMutableDictionary dictionary];
+
+    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if(authStatus == AVAuthorizationStatusAuthorized)
+    {
+        [event setObject:@"1" forKey:@"code"];
+    }
+    else if(authStatus == AVAuthorizationStatusNotDetermined)
+    {
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted)
+         {
+             if(granted)
+             {
+                 [event setObject:@"1" forKey:@"code"];
+             }
+             else
+             {
+                [event setObject:@"2" forKey:@"code"];
+             }
+         }];
+    }
+    else if (authStatus == AVAuthorizationStatusRestricted)
+    {
+        [event setObject:@"2" forKey:@"code"];
+        // My own Helper class is used here to pop a dialog in one simple line.
+//        [Helper popAlertMessageWithTitle:@"Error" alertText:@"You've been restricted from using the camera on this device. Without camera access this feature won't work. Please contact the device owner so they can give you access."];
+    }
+    else
+    {
+        [event setObject:@"2" forKey:@"code"];
+    }
+    
+    [self fireEvent:@"permission" withObject:event];
+}
+
 -(void)capture:(id)args
 {
 	ENSURE_UI_THREAD(capture,args);
 	ENSURE_SINGLE_ARG(args,NSDictionary);
     
     [self rememberSelf];
-	
+    
 	BOOL tryHarder = [TiUtils boolValue:[self valueForUndefinedKey:@"allowRotation"] def:NO];
     id acceptedFormats = [args valueForKey:@"acceptedFormats"];
     
